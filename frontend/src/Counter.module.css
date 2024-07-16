@@ -1,0 +1,170 @@
+.counter-container {
+  width: 100%;
+  height: 100%;
+
+}
+
+
+.count:hover {
+  /* transform: scale(150%); */
+}
+
+.count {
+  font-size: 3rem;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  text-shadow: #ff2d95 0px 0px 20px, #ff2d95 0px 0px 30px, #ff2d95 0px 0px 40px,
+    -16px -19px 2px rgba(206, 89, 55, 0);
+  filter: saturate(150%);
+  color: rgb(255, 255, 255);
+  text-transform: uppercase;
+  transition: 0.8s all;
+  font-weight: bold;
+  margin: 2vw;
+}
+
+.coin-container {
+  position: relative;
+  height: 200px;
+}
+
+button.tap {
+  position: absolute;
+  background-color: transparent;
+  width: 70%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: none;
+  outline: none; /* Убирает обводку при нажатии */
+  transition: 0.3s;
+
+  img {
+    border: none;
+    background-color: transparent;
+    outline: none; /* Убирает обводку при нажатии */
+    animation: lightEffect 2s infinite;
+
+
+  }
+}
+
+@keyframes lightEffect {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+  100% { filter: brightness(1); }
+}
+button.tap:active {
+  transform: translateX(-50%) scale(97%);
+  border-color: transparent;
+  background-color: transparent;
+  outline: none; /* Убирает обводку при нажатии */
+}
+button.tap:hover {
+
+  /* box-shadow: 11.912px 11.912px 47.649px 10px rgba(28, 241, 135, 0.5);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); */
+  border-color: none;
+}
+
+button.tap:focus {
+  outline: none; /* Убирает обводку при нажатии */
+  border: none;
+}
+
+button.tap:after {
+  position: relative;
+}
+
+button.tap:after:hover {
+
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0px 0px 10px rgba(28, 241, 135, 0.5);
+    z-index: 0;
+
+}
+
+.step-container {
+  height: 30px;
+  position: relative;
+  background: transparent;
+}
+
+.step {
+  position: absolute;
+  top: 0;
+  left: 43%;
+  opacity: 1;
+  color: white;
+  font-size: 3rem;
+  animation: step 0.5s;
+  text-shadow: 0 0 30px #49FF18, 0 0 40px #49FF18, 0 0 55px #49FF18, 2px 2px 2px rgba(206,89,55,0);
+  background: transparent;
+}
+
+.step-button {
+  padding: 10px;
+  margin: 10px;
+  background-image: linear-gradient(157deg, #f8a280 -5%, #be0202 81%);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+.step-button:hover {
+  filter: brightness(150%);
+  transform: scale(105%);
+}
+
+@keyframes step {
+  0% {
+    transform: none;
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-90%) scale(130%);
+    opacity: 0;
+  }
+}
+
+.active-button {
+  border: 2px solid red;
+}
+
+.indicator-container {
+  width: 100%;
+  height: 35px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  /* border-radius: 20px; */
+}
+
+.not-empty {
+  background: rgb(253, 255, 219);
+}
+
+.empty {
+  background: red;
+}
+
+.indicator {
+  height: 35px;
+  background: linear-gradient(45deg, #85FF4A 0%, #17D82B 47%, #08A532 100%);
+  box-shadow: 2px 1px 31px 5px rgba(2,194,81,1);
+  /* border-radius: 20px; */
+  transition: 0.7s width;
+}
+.passive {
+  opacity: 0.9;
+}
+.active {
+  opacity: 1;
+}
+
+.energyCounter {
+  color: white;
+  font-size: 19px;
+}

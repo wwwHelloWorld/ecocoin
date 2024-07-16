@@ -1,0 +1,26 @@
+.loaderImg {
+
+
+}
+
+.loaderContainer {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон */
+    background-image: url(../../assets/loader-img-croped.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-blend-mode: overlay; /* Смешивание фона и изображения */
+
+}
+
+.loaderH1{
+    color: white;
+    font-size: 5em;
+    text-shadow: 0 0 30px #49FF18, 0 0 40px #49FF18, 0 0 55px #49FF18, 2px 2px 2px rgba(206,89,55,0);
+}

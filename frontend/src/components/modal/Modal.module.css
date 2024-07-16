@@ -1,0 +1,49 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: rgb(183, 238, 229);
+    padding: 20px;
+    border-radius: 1px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 90%;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modalBody {
+    margin-top: 10px;
+}
+
+.modalImg {
+    animation: swing 3s infinite ease-in-out;
+}
+
+@keyframes swing {
+    0% { transform: perspective(100px) rotateY(0deg); }
+    25% { transform: perspective(100px) rotateY(25deg); }
+    50% { transform: perspective(100px) rotateY(0deg); }
+    75% { transform: perspective(100px) rotateY(-25deg); }
+    100% { transform: perspective(100px) rotateY(0deg); }
+  }
