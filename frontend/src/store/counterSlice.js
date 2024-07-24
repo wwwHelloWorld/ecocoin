@@ -1,52 +1,67 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const counterSlice = createSlice({
+const initialState = {
+  count: 0,
+  step: 1,
+  energy: 100,
+  isEnergyEmpty: false,
+  telegramId: null,
+  totalPoints: 0,
+  activePage: "main",
+  // isEntered: false,
+};
+
+const counterSlice = createSlice({
   name: "counter",
-  initialState: {
-    count: 0,
-    energy: 100,
-    step: 1,
-    isEnergyEmpty: false,
-    telegramId: null,
-  },
+  initialState,
   reducers: {
     incrementCount: (state, action) => {
-      if (state.energy > 0) {
-        state.isEnergyEmpty = false;
-        state.count += action.payload;
-      }
-    },
-    spentEnergy: (state, action) => {
-      if (state.energy > 0) {
-        state.energy -= action.payload;
-      }
-
+      state.count += action.payload;
       if (state.energy <= 0) {
-        state.energy = 0;
         state.isEnergyEmpty = true;
       }
     },
     addEnergy: (state, action) => {
-      if (state.energy + action.payload > 100) {
-        state.energy = 100;
-        return;
-      }
-      state.isEnergyEmpty = false;
-      state.energy += action.payload;
+      state.energy = Math.min(state.energy + action.payload, 100);
+      state.isEnergyEmpty = state.energy === 0;
     },
-    updateStep: (state, action) => {
-      state.step = action.payload;
+    spentEnergy: (state, action) => {
+      state.energy -= action.payload;
+      if (state.energy <= 0) {
+        state.isEnergyEmpty = true;
+        state.energy = 0;
+      }
     },
     setUserData: (state, action) => {
-      state.count = action.payload.totalPoints ?? state.count;
-      state.energy = action.payload.energy ?? state.energy;
-      state.step = action.payload.step ?? state.step;
-      state.telegramId = action.payload.telegramId ?? state.telegramId;
+      return { ...state, ...action.payload };
     },
+    setEnergy: (state, action) => {
+      state.energy = action.payload;
+      state.isEnergyEmpty = state.energy === 0;
+    },
+    setTotalPoints: (state, action) => {
+      state.totalPoints = action.payload;
+    },
+    setActivePage: (state, action) => {
+      state.activePage = action.payload;
+    },
+
+    setIsEntered:(state, action) => {
+      state.isEntered = action.payload;
+    }
   },
 });
 
-export const { incrementCount, spentEnergy, updateStep, addEnergy, setUserData } =
-  counterSlice.actions;
+export const {
+  incrementCount,
+  addEnergy,
+  spentEnergy,
+  setUserData,
+  setEnergy,
+  setTotalPoints,
+  setActivePage,
+  isEntered,
+  setIsEntered
+} = counterSlice.actions;
 
 export default counterSlice.reducer;

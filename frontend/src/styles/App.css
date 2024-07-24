@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 #root {
-  max-width: 1280px;
+  /* max-width: 1280px; */
   margin: 0 auto;
   text-align: center;
   /* background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(0,0,139,1) 50%, rgba(0,0,128,1) 100%); */
@@ -11,6 +11,7 @@
 
   height: 590px; /* высота мини-приложения Telegram */
   width: 380px;
+
 
 }
 

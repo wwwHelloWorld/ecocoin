@@ -1,31 +1,60 @@
+@import "./Variables.css";
+
 .counter-container {
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
 
 }
 
+header.header {
+  /* position: absolute; */
+  /* left: 3%;
+  top: 3%; */
+  width: 100%;
+  display:flex;
+  justify-content: flex-start;
+  align-content: flex-start;
+  gap: 2vw;
+}
+
+p.name {
+  color: white;
+  font-size: var(--small-font);
+
+}
+p.level {
+  color: #85FF4A;
+  font-size: var(--small-font);
+}
+p.account {
+  color: #F4A85F;
+  font-size: var(--small-font);
+}
 
 .count:hover {
   /* transform: scale(150%); */
 }
 
 .count {
-  font-size: 3rem;
+  font-size: 2rem;
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
-  text-shadow: #ff2d95 0px 0px 20px, #ff2d95 0px 0px 30px, #ff2d95 0px 0px 40px,
-    -16px -19px 2px rgba(206, 89, 55, 0);
+  text-shadow: var(--counter-text-shadow);
   filter: saturate(150%);
   color: rgb(255, 255, 255);
   text-transform: uppercase;
   transition: 0.8s all;
   font-weight: bold;
-  margin: 2vw;
+  margin: 1vw;
 }
 
 .coin-container {
   position: relative;
-  height: 200px;
+  height: 150px;
 }
 
 button.tap {
@@ -39,10 +68,13 @@ button.tap {
   transition: 0.3s;
 
   img {
+    width: 100%;
+    height: auto;
     border: none;
     background-color: transparent;
     outline: none; /* Убирает обводку при нажатии */
     animation: lightEffect 2s infinite;
+    z-index: 9999;
 
 
   }
@@ -83,13 +115,12 @@ button.tap:after:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    box-shadow: inset 0px 0px 10px rgba(28, 241, 135, 0.5);
+    box-shadow: var(--button-hover);
     z-index: 0;
 
 }
 
 .step-container {
-  height: 30px;
   position: relative;
   background: transparent;
 }
@@ -102,14 +133,14 @@ button.tap:after:hover {
   color: white;
   font-size: 3rem;
   animation: step 0.5s;
-  text-shadow: 0 0 30px #49FF18, 0 0 40px #49FF18, 0 0 55px #49FF18, 2px 2px 2px rgba(206,89,55,0);
+  text-shadow: var(--step-text-shadow);
   background: transparent;
 }
 
 .step-button {
   padding: 10px;
   margin: 10px;
-  background-image: linear-gradient(157deg, #f8a280 -5%, #be0202 81%);
+  background-image: var(--step-button-background);
   color: white;
   font-size: 20px;
   font-weight: bold;
@@ -152,8 +183,8 @@ button.tap:after:hover {
 
 .indicator {
   height: 35px;
-  background: linear-gradient(45deg, #85FF4A 0%, #17D82B 47%, #08A532 100%);
-  box-shadow: 2px 1px 31px 5px rgba(2,194,81,1);
+  background: var(--indicator-gradient);
+  box-shadow: var(--indicator-shadow);
   /* border-radius: 20px; */
   transition: 0.7s width;
 }
@@ -166,5 +197,5 @@ button.tap:after:hover {
 
 .energyCounter {
   color: white;
-  font-size: 19px;
+  font-size: var(--medium-font);
 }

@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from "react";
-import styles from "./Counter.module.css";
+import { useEffect, useState, useRef } from "react";
+import styles from "./styles/Counter.module.css";
 import EnergyIndicator from "./EnergyIndicator";
 import { useSelector, useDispatch } from "react-redux";
 import {
+  spentEnergy,
   addEnergy,
   incrementCount,
-  updateStep,
   setUserData,
+  setEnergy,
+  setTotalPoints,
+  setIsEntered,
+  isEntered,
 } from "./store/counterSlice";
 import coin from "./assets/ecocoin-230.png";
-import icon from './assets/bot-icon-150.png'
+import icon from "./assets/bot-icon-150.png";
 import io from "socket.io-client";
 import { getTelegramData } from "./utility/getTelegramData.js";
 import Modal from "./components/modal/Modal";
@@ -19,120 +23,118 @@ const Counter = () => {
   const count = useSelector((state) => state.counter.count);
   const step = useSelector((state) => state.counter.step);
   const energy = useSelector((state) => state.counter.energy);
+  const totalPoints = useSelector((state) => state.counter.totalPoints);
   const telegramId = useSelector((state) => state.counter.telegramId);
+  const isEntered = useSelector((state) => state.counter.isEntered);
 
   const dispatch = useDispatch();
   const [isStepVisible, setIsStepVisible] = useState(false);
   const [socket, setSocket] = useState(null);
-  const [userName, setUserName] = useState(null);
+  const [telegramName, setTelegramName] = useState(null);
+  const [telegramUserName, setTelegramUserName] = useState(null);
   const [botPoints, setBotPoints] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isFirstEnter, setIsFirstEnter] = useState(true);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    // setIsFirstEnter(false);
+    dispatch(setIsEntered(true))
   };
 
-  const decimals = useRef(0);
 
   useEffect(() => {
     const telegramData = getTelegramData();
-    setUserName(telegramData.first_name);
-
-    const newSocket = io("http://localhost:3000");
-    setSocket(newSocket);
-
     if (telegramData) {
-      newSocket.emit("getUserData", telegramData.id);
+      setTelegramName(telegramData.first_name);
+      setTelegramUserName(telegramData.username);
+      dispatch(setUserData({ telegramId: telegramData.id }));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (telegramId) {
+      const newSocket = io("http://localhost:3000");
+      setSocket(newSocket);
+
+      newSocket.emit("getUserData", telegramId);
 
       newSocket.on("userData", (userData) => {
         dispatch(setUserData(userData));
+        dispatch(setTotalPoints(userData.totalPoints));
+        dispatch(setEnergy(userData.energy));
       });
 
       newSocket.on("updateCount", ({ userId, totalPoints }) => {
-        if (userId === telegramData.id) {
-          dispatch(setUserData({ totalPoints }));
-        }
-      });
-
-      newSocket.on("updateEnergy", ({ userId, energy }) => {
-        if (userId === telegramData.id) {
-          dispatch(setUserData({ energy }));
+        if (userId === telegramId) {
+          dispatch(setTotalPoints(totalPoints));
         }
       });
 
       newSocket.on("botTapPoints", ({ pointsToAdd, totalPoints }) => {
-        console.log(`Bot tapped ${pointsToAdd} points`);
         setIsModalOpen(true);
         setBotPoints(pointsToAdd);
-        dispatch(setUserData({ totalPoints }));
+        dispatch(setTotalPoints(totalPoints));
+
       });
+
+      return () => {
+        newSocket.close();
+      };
     }
+  }, [telegramId, dispatch]);
 
-    return () => newSocket.close();
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (socket) {
-      socket.emit("addEnergy", { userId: telegramId, energy });
-    }
-},[energy])
-
-  useEffect(() => {
-    if (count > 0 && count % 10 === 0) {
-      decimals.current = Math.floor(count / 10);
-    }
-    setIsStepVisible(true);
-    const timeout = setTimeout(() => setIsStepVisible(false), 200);
-
-    return () => clearTimeout(timeout);
-  }, [count]);
 
   const clickHandler = () => {
-    if (socket) {
-      socket.emit("incrementCount", { userId: telegramId, step });
+    if (energy > 0) {
+      dispatch(incrementCount(step));
+      dispatch(spentEnergy(step));
+      if (socket) {
+        socket.emit("incrementCount", { userId: telegramId, step });
+        socket.emit("addEnergy", { userId: telegramId, energy });
+      }
     }
-    dispatch(incrementCount(step));
   };
 
-  // const renewEnergy = () => {
-  //   dispatch(addEnergy(100 - energy));
-  //   if (socket) {
-  //     socket.emit('addEnergy', { userId: telegramId, energy: 100 - energy });
-  //   }
-  // };
+  useEffect(()=> {
 
-  window.Telegram.WebApp.ready();
+  const tg = window.Telegram.WebApp;
+  tg.MainButton.text = "LAUNCH APP";
+  tg.ready();
+  }, []);
 
   return (
     <div className={styles["counter-container"]}>
-
       <div>
-        {isModalOpen && (
-          <Modal
-            onClose={handleCloseModal}
-            icon={icon}
-          >
-            <h2>EcoBot taped ${botPoints} coin</h2>
+        {!isEntered && isModalOpen && (
+          <Modal onClose={handleCloseModal} icon={icon}>
+            <h2>EcoBot tapped {botPoints} coin</h2>
           </Modal>
         )}
       </div>
-      <p style={{ color: "white", position: "absolute", left: "10%"}}>{"Hi, " + userName || "no user"}</p>
-      <p style={{ color: "#85FF4A", position: "absolute", left: "10%", top: "5%"}}>{"Multitap level - " + step || "no step"}</p>
+      <header className={styles.header}>
+        <p className={styles.name}>{"Hi, " + (telegramName || "no user")}</p>
+        <p className={styles.level}>{"Level: " + (step || "no step")}</p>
+        <p className={styles.account}>{`Account: ${telegramUserName}`}</p>
+      </header>
       <div className={styles["step-container"]}>
         {isStepVisible ? <p className={styles.step}>+{step}</p> : ""}
       </div>
-      <Spacer size={10}/>
-      <p className={styles.count}>{count}</p>
+      <Spacer size={10} />
+      <p className={styles.count}>{totalPoints}</p>
       <div className={styles["coin-container"]}>
         <button className={styles.tap} onClick={clickHandler}>
-          <img src={coin} alt="Eco Coin" style={{opacity: 0.5 + (energy / 200)}} />
+          <img
+            src={coin}
+            alt="Eco Coin"
+            style={{ opacity: 0.5 + energy / 200 }}
+          />
         </button>
       </div>
-
+      <p className={styles.totalPoints}>clicks: {count}</p>
       <br />
       <br />
       <EnergyIndicator />
-      {/* <button onClick={renewEnergy}>Renew Energy</button> */}
     </div>
   );
 };

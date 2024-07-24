@@ -1,55 +1,30 @@
+// routes/users.js
 const express = require('express');
-const User = require('../models/User');
 const router = express.Router();
+const User = require('../models/User');
 
-// Создание пользователя
-router.post('/', async (req, res) => {
+const app = express();
+
+// Получение рефералов пользователя
+app.get('/api/referrals', async (req, res) => {
+  const { telegramId } = req.query;
   try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).send(user);
+    // Fetch referrals from database
+    const referrals = await getReferralsFromDatabase(telegramId);
+    res.json(referrals);
   } catch (error) {
-    res.status(400).send(error);
+    console.error('Error fetching referrals:', error);
+    res.status(500).send('Server error');
   }
 });
 
-// Получение пользователя по userId
-router.get('/:userId', async (req, res) => {
-  try {
-    const user = await User.findOne({ userId: req.params.userId });
-    if (!user) {
-      return res.status(404).send();
-    }
-    res.send(user);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
-
-// Обновление пользователя
-router.put('/:userId', async (req, res) => {
-  try {
-    const user = await User.findOneAndUpdate({ userId: req.params.userId }, req.body, { new: true, runValidators: true });
-    if (!user) {
-      return res.status(404).send();
-    }
-    res.send(user);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
-
-// Удаление пользователя
-router.delete('/:userId', async (req, res) => {
-  try {
-    const user = await User.findOneAndDelete({ userId: req.params.userId });
-    if (!user) {
-      return res.status(404).send();
-    }
-    res.send(user);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
+async function getReferralsFromDatabase(telegramId) {
+  // Implement database fetching logic here
+  return [
+    { id: 1, username: 'user1', points: 100 },
+    { id: 2, username: 'user2', points: 150 },
+    // Add more referral data as needed
+  ];
+}
 
 module.exports = router;

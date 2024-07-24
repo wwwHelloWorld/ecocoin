@@ -1,11 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { spentEnergy, addEnergy } from "./store/counterSlice";
-import styles from "./Counter.module.css";
-import { useEffect, useState, useRef, useLayoutEffect } from "react";
+import styles from "./styles/Counter.module.css";
+import { useEffect, useState, useLayoutEffect } from "react";
 
 export default function EnergyIndicator() {
   const [isUpdated, setIsUpdated] = useState(false);
-  const [isFirstRender, setIsFirstRender] = useState(true);
   const [background, setBackground] = useState("not-empty");
   const dispatch = useDispatch();
 
@@ -24,34 +23,31 @@ export default function EnergyIndicator() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      dispatch(addEnergy(1));
-    }, 10000); // Обновляем энергию каждую минуту (10 секунд для тестирования)
+      if (energy < 100) {
+        dispatch(addEnergy(1));
+      }
+    }, 10000); // Обновляем энергию каждые 10 секунд
     return () => clearInterval(interval);
-  }, [dispatch, isEnergyEmpty]);
+  }, [dispatch, energy]);
 
-  useEffect(() => {
-    if (isFirstRender) {
-      setIsFirstRender(false);
-      return;
-    }
+  // useEffect(() => {
+  //   if (count === 0) return;
 
-    dispatch(spentEnergy(step));
-    setIsUpdated(true);
-    const timeout = setTimeout(() => {
-      setIsUpdated(false);
-    }, 200);
-    return () => clearTimeout(timeout);
-  }, [count, dispatch, step]);
+  //   dispatch(spentEnergy(step));
+  //   setIsUpdated(true);
+  //   const timeout = setTimeout(() => {
+  //     setIsUpdated(false);
+  //   }, 200);
+  //   return () => clearTimeout(timeout);
+  // }, [count, dispatch, step]);
 
   return (
     <>
-      <div
-        className={`${styles[`${background}`]} ${styles["indicator-container"]}`}
-      >
+      <div className={`${styles[background]} ${styles["indicator-container"]}`}>
         <div
           className={styles.indicator}
           style={{
-            width: energy + "%",
+            width: `${energy}%`,
             float: "left",
             opacity: isUpdated ? 1 : 0.7,
           }}

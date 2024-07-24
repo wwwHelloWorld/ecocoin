@@ -5,6 +5,7 @@ const cors = require('cors');
 const connectDB = require('./db');
 const User = require('./models/User');
 const updateStep = require('./utils/updateStep.js');
+const userRoutes = require('./routes/users.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -22,6 +23,9 @@ module.exports.io = io;
 connectDB();
 
 app.use(cors());
+app.use(express.json());
+
+app.use('/api/users', userRoutes);
 
 const calculatePointsToAdd = (lastLogin, currentTime, step) => {
   const elapsedSeconds = Math.floor((currentTime - lastLogin) / 1000);
@@ -30,8 +34,9 @@ const calculatePointsToAdd = (lastLogin, currentTime, step) => {
 
 const calculateEnergyToAdd = (lastLogin, currentTime) => {
   const elapsedSeconds = Math.floor((currentTime - lastLogin) / 1000);
-  return Math.min(Math.floor(elapsedSeconds / 10), 100); // Max energy addition of 100
+  return Math.min(Math.floor(elapsedSeconds / 10), 100);
 };
+
 io.on('connection', (socket) => {
   console.log('New client connected');
 
@@ -54,7 +59,6 @@ io.on('connection', (socket) => {
         const pointsToAdd = calculatePointsToAdd(lastLogin, currentTime, user.step);
         user.totalPoints += pointsToAdd;
 
-        // Calculate new energy level
         const energyToAdd = calculateEnergyToAdd(lastLogin, currentTime);
         user.energy = Math.min(user.energy + energyToAdd, 100);
 
@@ -64,6 +68,8 @@ io.on('connection', (socket) => {
         await user.save();
 
         socket.emit('botTapPoints', { pointsToAdd, totalPoints: user.totalPoints });
+        console.log("POint to add", user.telegramId, pointsToAdd);
+        console.log(user.telegramId,user.energy);
       }
 
       socket.emit('userData', {
@@ -88,24 +94,10 @@ io.on('connection', (socket) => {
         user.step = updateStep(user.totalPoints);
         await user.save();
         io.emit('updateCount', { userId: user.telegramId, totalPoints: user.totalPoints });
+        console.log("Count", user.telegramId, user.totalPoints)
       }
     } catch (error) {
       console.error('Error updating count:', error);
-    }
-  });
-
-  socket.on('updateStep', async ({ userId, newStep }) => {
-    try {
-      const user = await User.findOneAndUpdate(
-        { telegramId: userId },
-        { $set: { step: newStep } },
-        { new: true }
-      );
-      if (user) {
-        io.emit('updateStep', { userId: user.telegramId, step: user.step });
-      }
-    } catch (error) {
-      console.error('Error updating step:', error);
     }
   });
 
@@ -118,28 +110,20 @@ io.on('connection', (socket) => {
       );
       if (user) {
         io.emit('updateEnergy', { userId: user.telegramId, energy: user.energy });
+        console.log("Update energy", user.telegramId, user.energy)
       }
     } catch (error) {
       console.error('Error updating energy:', error);
     }
   });
 
-  socket.on('disconnect', async () => {
-    try {
-      const userId = socket.userId;
-      if (userId) {
-        const user = await User.findOne({ telegramId: userId });
-        if (user) {
-          user.lastLogin = new Date();
-          await user.save();
-        }
-      }
-      console.log('Client disconnected');
-    } catch (error) {
-      console.error('Error handling disconnect:', error);
-    }
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
   });
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

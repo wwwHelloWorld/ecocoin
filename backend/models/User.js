@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  username: {
+    type: String,
+    default: ''
+  },
   totalPoints: {
     type: Number,
     default: 0
@@ -21,7 +25,13 @@ const userSchema = new mongoose.Schema({
   lastLogin: {
     type: Date,
     default: Date.now
-  }
+  },
+  referrals: [
+    {
+      telegramId: String,
+      pointsEarned: { type: Number, default: 0 }
+    }
+  ]
 });
 
 module.exports = mongoose.model('User', userSchema);
