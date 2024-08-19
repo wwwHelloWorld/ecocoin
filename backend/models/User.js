@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
   referrals: [
     {
       telegramId: String,
-      pointsEarned: { type: Number, default: 0 }
+      userName: String
     }
   ]
 });

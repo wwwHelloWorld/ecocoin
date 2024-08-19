@@ -3,28 +3,20 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
-const app = express();
-
-// Получение рефералов пользователя
-app.get('/api/referrals', async (req, res) => {
-  const { telegramId } = req.query;
+// Маршрут для получения рефералов по telegramId
+router.get('/referrals/:telegramId', async (req, res) => {
   try {
-    // Fetch referrals from database
-    const referrals = await getReferralsFromDatabase(telegramId);
-    res.json(referrals);
+    const user = await User.findOne({ telegramId: req.params.telegramId });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user.referrals);
   } catch (error) {
     console.error('Error fetching referrals:', error);
-    res.status(500).send('Server error');
+    res.status(500).json({ error: 'Server error' });
   }
 });
-
-async function getReferralsFromDatabase(telegramId) {
-  // Implement database fetching logic here
-  return [
-    { id: 1, username: 'user1', points: 100 },
-    { id: 2, username: 'user2', points: 150 },
-    // Add more referral data as needed
-  ];
-}
 
 module.exports = router;

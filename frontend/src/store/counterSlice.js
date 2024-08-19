@@ -8,6 +8,7 @@ const initialState = {
   telegramId: null,
   totalPoints: 0,
   activePage: "main",
+  isDataLoaded: false,
   // isEntered: false,
 };
 
@@ -48,6 +49,10 @@ const counterSlice = createSlice({
 
     setIsEntered:(state, action) => {
       state.isEntered = action.payload;
+    },
+
+    setisDataLoaded: (state, action) => {
+      state.isDataLoaded = action.payload
     }
   },
 });
@@ -61,7 +66,8 @@ export const {
   setTotalPoints,
   setActivePage,
   isEntered,
-  setIsEntered
+  setIsEntered,
+  setisDataLoaded
 } = counterSlice.actions;
 
 export default counterSlice.reducer;

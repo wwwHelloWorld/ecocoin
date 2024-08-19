@@ -34,6 +34,7 @@ const Counter = () => {
   const [telegramUserName, setTelegramUserName] = useState(null);
   const [botPoints, setBotPoints] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   // const [isFirstEnter, setIsFirstEnter] = useState(true);
 
   const handleCloseModal = () => {
@@ -53,7 +54,14 @@ const Counter = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (telegramId) {
+    setIsStepVisible(true);
+    const timeout = setTimeout(() => setIsStepVisible(false), 500);
+
+    return () => clearTimeout(timeout);
+  }, [count])
+
+  useEffect(() => {
+    if (true) {
       const newSocket = io("http://localhost:3000");
       setSocket(newSocket);
 
@@ -71,11 +79,14 @@ const Counter = () => {
         }
       });
 
+
       newSocket.on("botTapPoints", ({ pointsToAdd, totalPoints }) => {
+        if(pointsToAdd) {
         setIsModalOpen(true);
         setBotPoints(pointsToAdd);
         dispatch(setTotalPoints(totalPoints));
 
+      }
       });
 
       return () => {
